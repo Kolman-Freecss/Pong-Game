@@ -1,10 +1,14 @@
 package com.ragnarok.view;
 
+import com.ragnarok.controller.BaseGame;
+
 public class Game {
 
 	public static void main(String[] args) {
 
-		//TODO All.
+		BaseGame game = new BaseGame();
+		
+		game.gameLoop();
 		
 	}
 
