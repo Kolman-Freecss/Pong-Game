@@ -10,6 +10,7 @@ public class Racket implements Drawable
 {
 
 	private Vector2 position;
+	private int lastPositionY;
 	private Vector2 size;
 	private Vector2 direction;
 	private Vector2 speed;
@@ -18,7 +19,7 @@ public class Racket implements Drawable
 	public Racket(int numberPlayer)
 	{
 
-		this.size = new Vector2(4, 10);
+		this.size = new Vector2(8, 36);
 		if (numberPlayer == 1)
 		{
 			this.position = new Vector2(20, BaseGame.GAME_WINDOW_HEIGHT / 2 - this.size.X);
@@ -27,6 +28,7 @@ public class Racket implements Drawable
 			this.position = new Vector2(BaseGame.GAME_WINDOW_WIDTH - 20 - this.size.X,
 					BaseGame.GAME_WINDOW_HEIGHT / 2 - this.size.X);
 		}
+		this.lastPositionY = this.getPositionY();
 		this.player = new Player(numberPlayer);
 		/* The racket only have 2 directions UP or DOWN */
 		this.speed = new Vector2(0, 1);
@@ -34,24 +36,30 @@ public class Racket implements Drawable
 
 	}
 
-	public boolean collideWithBall(Ball ball)
+	public boolean collideWithBall(Ball ball, int player)
 	{
-		if(this.getPositionX() + this.getSize().getX() > ball.getPositionX() + ball.getSize())
-			return true;
+		if(player == 1)
+			if(this.getPositionX() + this.getSize().getX() > ball.getPositionX() + ball.getSize()
+			&& this.getPositionY() < ball.getPositionY() && this.getPositionY() + this.getSize().getY() > ball.getPositionY() + ball.getSize())
+				return true;
+		if(player == 2)
+			if(this.getPositionX() + this.getSize().getX() < ball.getPositionX() + ball.getSize()
+			&& this.getPositionY() < ball.getPositionY() && this.getPositionY() + this.getSize().getY() > ball.getPositionY() + ball.getSize())
+				return true;
 		return false;
 	}
 
 	public void move()
 	{
-		this.setPositionX(this.getPositionX() + this.getSize().getX() * this.speed.getX() * this.direction.getX());
+		this.setLastPositionY(this.getPositionY());
 		this.setPositionY(this.getPositionY() + this.getSize().getY() * this.speed.getY() * this.direction.getY());
 	}
 
-	public void isOutOfWindow(int windowHeight)
+	public boolean isOutOfWindow(int windowHeight)
 	{
-		//if (this.getPositionY() + this.getSize().getY() > windowHeight || this.getPositionY() < 0)
-			//this.setPositionY(position);
-		//return false;
+		if (this.getPositionY() + this.getSize().getY() > windowHeight || this.getPositionY() < 0)
+			return true;
+		return false;
 	}
 
 	@Override
@@ -59,6 +67,16 @@ public class Racket implements Drawable
 	{
 		g.setColor(Color.RED);
 		g.fillRect(this.getPositionX(), this.getPositionY(), this.getSize().X, this.getSize().Y);
+	}
+	
+	public int getLastPositionY()
+	{
+		return lastPositionY;
+	}
+
+	public void setLastPositionY(int lastPositionY)
+	{
+		this.lastPositionY = lastPositionY;
 	}
 
 	public Vector2 getPosition()
