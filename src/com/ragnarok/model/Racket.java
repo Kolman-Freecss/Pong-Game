@@ -13,7 +13,7 @@ public class Racket implements Drawable
 	private int lastPositionY;
 	private Vector2 size;
 	private Vector2 direction;
-	private Vector2 speed;
+	private int speed;
 	private Player player;
 
 	public Racket(int numberPlayer)
@@ -22,37 +22,56 @@ public class Racket implements Drawable
 		this.size = new Vector2(8, 36);
 		if (numberPlayer == 1)
 		{
-			this.position = new Vector2(20, BaseGame.GAME_WINDOW_HEIGHT / 2 - this.size.X);
+			this.position = new Vector2(this.size.X, BaseGame.GAME_WINDOW_HEIGHT / 2 - this.size.X);
 		} else if (numberPlayer == 2)
 		{
-			this.position = new Vector2(BaseGame.GAME_WINDOW_WIDTH - 20 - this.size.X,
+			int number = this.size.X * 4;
+			this.position = new Vector2(BaseGame.GAME_WINDOW_WIDTH - number,
 					BaseGame.GAME_WINDOW_HEIGHT / 2 - this.size.X);
 		}
 		this.lastPositionY = this.getPositionY();
 		this.player = new Player(numberPlayer);
 		/* The racket only have 2 directions UP or DOWN */
-		this.speed = new Vector2(0, 1);
+		this.speed = 20;
 		this.direction = new Vector2(0, 1);
 
 	}
 
-	public boolean collideWithBall(Ball ball, int player)
+	public Ball collideWithBall(Ball ball)
 	{
-		if(player == 1)
-			if(this.getPositionX() + this.getSize().getX() > ball.getPositionX() + ball.getSize()
-			&& this.getPositionY() < ball.getPositionY() && this.getPositionY() + this.getSize().getY() > ball.getPositionY() + ball.getSize())
-				return true;
-		if(player == 2)
-			if(this.getPositionX() + this.getSize().getX() < ball.getPositionX() + ball.getSize()
-			&& this.getPositionY() < ball.getPositionY() && this.getPositionY() + this.getSize().getY() > ball.getPositionY() + ball.getSize())
-				return true;
-		return false;
+		boolean isCollide = false;
+		if (this.player.getNumberPlayer() == 1)
+			if (this.getPositionX() + this.getSize().getX() > ball.getPositionX()
+					&& this.getPositionY() < ball.getPositionY()
+					&& this.getPositionY() + this.getSize().getY() > ball.getPositionY() + ball.getSize())
+			{
+				isCollide = true;
+			}
+		if (this.player.getNumberPlayer() == 2)
+			if (this.getPositionX() < ball.getPositionX() + ball.getSize()
+					&& this.getPositionY() < ball.getPositionY()
+					&& this.getPositionY() + this.getSize().getY() > ball.getPositionY() + ball.getSize())
+			{
+				isCollide = true;
+			}
+
+		// Flip, change direction and sum punctuation to the player.
+		if (isCollide)
+		{
+			int X = -(ball.getDirection().getX());
+			int Y = (int) Math.round(Math.random()) * 2 - 1;
+			ball.setDirection(new Vector2(X, Y));
+			ball.getDirection().normalized();
+			this.player.setPunctuation(this.player.getPunctuation() + 1);
+		}
+
+		return ball;
 	}
 
 	public void move()
 	{
 		this.setLastPositionY(this.getPositionY());
-		this.setPositionY(this.getPositionY() + this.getSize().getY() * this.speed.getY() * this.direction.getY());
+		this.setPositionY(this.getPositionY() + this.direction.getY() * this.speed);
 	}
 
 	public boolean isOutOfWindow(int windowHeight)
@@ -68,7 +87,7 @@ public class Racket implements Drawable
 		g.setColor(Color.RED);
 		g.fillRect(this.getPositionX(), this.getPositionY(), this.getSize().X, this.getSize().Y);
 	}
-	
+
 	public int getLastPositionY()
 	{
 		return lastPositionY;
@@ -109,12 +128,12 @@ public class Racket implements Drawable
 		this.direction = direction;
 	}
 
-	public Vector2 getSpeed()
+	public int getSpeed()
 	{
 		return speed;
 	}
 
-	public void setSpeed(Vector2 speed)
+	public void setSpeed(int speed)
 	{
 		this.speed = speed;
 	}

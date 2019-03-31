@@ -78,29 +78,25 @@ public class BaseGame
 				switch (keyCode)
 				{
 				case KeyEvent.VK_UP:
-					if (!racket2.getDirection().equals(new Vector2(0, 1)))
+					if (!racket2.getDirection().equals(new Vector2(0, -1)))
 						racket2.setDirection(new Vector2(0, -1));
-						racket2.setSpeed(new Vector2(0, -1));
 						racket2.move();
 					break;
 				case KeyEvent.VK_DOWN:
-					if (!racket2.getDirection().equals(new Vector2(0, -1)))
+					if (!racket2.getDirection().equals(new Vector2(0, 1)))
 						racket2.setDirection(new Vector2(0, 1));
-						racket2.setSpeed(new Vector2(0, 1));
 						racket2.move();
 					break;
 				// UP
 				case KeyEvent.VK_W:
-					if (!racket1.getDirection().equals(new Vector2(0, 1)))
+					if (!racket1.getDirection().equals(new Vector2(0, -1)))
 						racket1.setDirection(new Vector2(0, -1));
-						racket1.setSpeed(new Vector2(0, -1));
 						racket1.move();
 					break;
 				// DOWN
 				case KeyEvent.VK_S:
-					if (!racket1.getDirection().equals(new Vector2(0, -1)))
+					if (!racket1.getDirection().equals(new Vector2(0, 1)))
 						racket1.setDirection(new Vector2(0, 1));
-						racket1.setSpeed(new Vector2(0, 1));
 						racket1.move();
 					break;
 				default:
@@ -111,7 +107,7 @@ public class BaseGame
 		});
 		
 		frame.add(container);
-		frame.setSize(container.getWindowWidth(), container.getWindowWidth());
+		frame.setSize(container.getWindowWidth(), container.getWindowHeight());
 		frame.setVisible(true);
 	}
 	
@@ -119,29 +115,29 @@ public class BaseGame
 	{
 		while (true)
 		{
-			if(racket1.collideWithBall(ball, 1))
-			{
-				ball.setDirection(new Vector2(1, 0));
-				racket1.getPlayer().setPunctuation(racket1.getPlayer().getPunctuation() + 1);
-				
-			}
-			if(racket2.collideWithBall(ball, 2))
-			{
-				ball.setDirection(new Vector2(-1, 0));
-				racket2.getPlayer().setPunctuation(racket2.getPlayer().getPunctuation() + 1);
-				
-			}
+			ball.collisionRoofFloor();
+			
+			ball = racket1.collideWithBall(ball);
+			ball = racket2.collideWithBall(ball);
+			
+			//Game Over
+			if(ball.isOutOfLimits(GAME_WINDOW_WIDTH, GAME_WINDOW_HEIGHT))
+				break;
 			
 			ball.move();
-			this.frame.repaint();
-			if(racket1.isOutOfWindow((int)container.getSize().getWidth()))
+			
+			if(racket1.isOutOfWindow((int)container.getSize().getHeight()))
 			{
 				racket1.setPositionY(racket1.getLastPositionY());
 			}
-			if(racket2.isOutOfWindow((int)container.getSize().getWidth()))
+			if(racket2.isOutOfWindow((int)container.getSize().getHeight()))
 			{
 				racket2.setPositionY(racket2.getLastPositionY());
 			}
+			
+			this.frame.repaint();
+			
+			
 			try {
 				Thread.sleep(GAME_SPEED);
 			} catch (InterruptedException e) {

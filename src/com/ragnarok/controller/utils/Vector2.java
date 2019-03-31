@@ -8,6 +8,13 @@ public class Vector2 {
 	public Vector2() { }
 	public Vector2(int X, int Y) { this.X = X; this.Y = Y; }
 	
+	public void normalized()
+	{
+		Vector2 aux = VectorUtils.normalize(new Vector2(this.getX(), this.getY()));
+		this.setX(aux.getX());
+		this.setY(aux.getY());
+	}
+	
 	@Override
 	public int hashCode() 
 	{
